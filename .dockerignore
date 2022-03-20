@@ -1,0 +1,13 @@
+*.swp
+*.swo
+*.pyc
+*.log
+
+.idea/
+.venv/
+build/
+target/
+docker/
+
+# TODO Remove this latest
+*README.md

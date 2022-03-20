@@ -1,0 +1,30 @@
+FROM ubuntu:20.04
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    gcc \
+    pkg-config \
+    libxml2-dev \
+    libssl-dev \
+    python3 \
+    pip \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/local/src
+
+ARG curl_download=download/curl-7.82.0
+
+RUN wget https://curl.se/${curl_download}.tar.bz2 && \
+    tar jxvf $(basename ${curl_download}).tar.bz2 && \
+    cd $(basename ${curl_download}) && \
+    ./configure --prefix=/usr --with-openssl && make && make install && \
+    rm -rf /usr/local/src/curl*
+
+WORKDIR /usr/local/src/hurl
+
+COPY ./ci/install_rust_latest.sh ./ci/
+COPY ./ci/test_prerequisites.sh ./ci/
+RUN ./ci/install_rust_latest.sh
+RUN ./ci/test_prerequisites.sh
+
+COPY . .
